@@ -1,34 +1,28 @@
-```javascript
 const form = document.getElementById("formUsuario");
 
 const tabela = document.getElementById("tabelaUsuarios");
 
-const mensagem = document.getElementById("mensagem");
+const API = "http://localhost:3000";
 
 /*
-========================================
-LOCAL STORAGE
-========================================
+========================
+LISTAR USUÁRIOS
+========================
 */
 
-// PEGAR DADOS SALVOS
+window.addEventListener("DOMContentLoaded", () => {
 
-let usuarios =
-    JSON.parse(localStorage.getItem("usuarios")) || [];
+    listarUsuarios();
 
-// MOSTRAR AO ABRIR A PÁGINA
-
-atualizarTabela();
+});
 
 /*
-========================================
+========================
 CADASTRAR
-========================================
+========================
 */
 
-form.addEventListener("submit", function(event){
-
-    // EVITA RECARREGAR A PÁGINA
+form.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
@@ -45,12 +39,10 @@ form.addEventListener("submit", function(event){
         document.getElementById("perfil").value;
 
     /*
-    ========================================
+    ========================
     VALIDAÇÕES
-    ========================================
+    ========================
     */
-
-    // CAMPOS VAZIOS
 
     if(
         nome === "" ||
@@ -58,248 +50,226 @@ form.addEventListener("submit", function(event){
         endereco === "" ||
         perfil === ""
     ){
-
-        mensagem.innerHTML =
-            "Preencha todos os campos.";
-
-        mensagem.style.color = "red";
-
         return;
     }
-
-    /*
-    ========================================
-    EMAIL
-    ========================================
-    */
-
-    // EMAIL DEVE TER @ E gmail.com
 
     if(
         !email.includes("@") ||
         !email.endsWith("gmail.com")
     ){
-
-        mensagem.innerHTML =
-            "O e-mail deve ser um Gmail válido.";
-
-        mensagem.style.color = "red";
-
         return;
     }
 
     /*
-    ========================================
-    EMAIL DUPLICADO
-    ========================================
+    ========================
+    ENVIAR
+    ========================
     */
 
-    const emailExiste = usuarios.find(
-        usuario => usuario.email === email
-    );
+    try{
 
-    if(emailExiste){
+        await fetch(
 
-        mensagem.innerHTML =
-            "Erro: e-mail já cadastrado.";
+            `${API}/usuarios`,
 
-        mensagem.style.color = "red";
+            {
 
-        return;
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    nome,
+                    email,
+                    endereco,
+                    perfil
+
+                })
+
+            }
+
+        );
+
+        form.reset();
+
+        listarUsuarios();
+
     }
 
-    /*
-    ========================================
-    OBJETO
-    ========================================
-    */
+    catch(erro){
 
-    const usuario = {
+        console.log(erro);
 
-        nome,
-        email,
-        endereco,
-        perfil
-
-    };
-
-    /*
-    ========================================
-    SALVAR
-    ========================================
-    */
-
-    usuarios.push(usuario);
-
-    // SALVAR NO NAVEGADOR
-
-    localStorage.setItem(
-        "usuarios",
-        JSON.stringify(usuarios)
-    );
-
-    /*
-    ========================================
-    MENSAGEM
-    ========================================
-    */
-
-    mensagem.innerHTML =
-        "Usuário cadastrado com sucesso.";
-
-    mensagem.style.color = "green";
-
-    atualizarTabela();
-
-    form.reset();
+    }
 
 });
 
 /*
-========================================
-ATUALIZAR TABELA
-========================================
+========================
+LISTAR
+========================
 */
 
-function atualizarTabela(){
+async function listarUsuarios(){
 
-    tabela.innerHTML = "";
+    try{
 
-    /*
-    ========================================
-    SEM USUÁRIOS
-    ========================================
-    */
+        const resposta = await fetch(
 
-    if(usuarios.length === 0){
+            `${API}/usuarios`
 
-        tabela.innerHTML = `
+        );
 
-            <tr class="sem-usuarios">
+        const usuarios = await resposta.json();
 
-                <td colspan="5">
+        tabela.innerHTML = "";
 
-                    <div class="vazio">
+        if(usuarios.length === 0){
 
-                        <h3>
-                            Nenhum usuário cadastrado.
-                        </h3>
+            tabela.innerHTML = `
 
-                        <p>
-                            Cadastre um novo usuário.
-                        </p>
+                <tr>
 
-                    </div>
+                    <td colspan="5">
 
-                </td>
+                        Nenhum usuário cadastrado.
 
-            </tr>
+                    </td>
 
-        `;
+                </tr>
 
-        return;
+            `;
+
+            return;
+        }
+
+        usuarios.forEach((usuario) => {
+
+            tabela.innerHTML += `
+
+                <tr>
+
+                    <td>${usuario.nome}</td>
+
+                    <td>${usuario.contato}</td>
+
+                    <td>${usuario.endereco}</td>
+
+                    <td>${usuario.perfil}</td>
+
+                    <td>
+
+                        <button
+                            class="editar"
+                            onclick="editarUsuario(
+                                ${usuario.id_usuario},
+                                '${usuario.nome}',
+                                '${usuario.contato}',
+                                '${usuario.endereco}',
+                                '${usuario.perfil}'
+                            )"
+                        >
+
+                            Editar
+
+                        </button>
+
+                        <button
+                            class="excluir"
+                            onclick="excluirUsuario(
+                                ${usuario.id_usuario}
+                            )"
+                        >
+
+                            Excluir
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+        });
+
     }
 
-    /*
-    ========================================
-    MOSTRAR USUÁRIOS
-    ========================================
-    */
+    catch(erro){
 
-    usuarios.forEach((usuario, index) => {
+        console.log(erro);
 
-        tabela.innerHTML += `
+    }
 
-            <tr>
-
-                <><td>${usuario.nome}</td><td>${usuario.email}</td><td>${usuario.endereco}</td><td>${usuario.perfil}</td><td>
-
-                    <button
-                        class="editar"
-                        onclick="editarUsuario(${index})"
-                    >
-
-                        Editar
-
-                    </button>
-
-                    <button
-                        class="excluir"
-                        onclick="excluirUsuario(${index})"
-                    >
-
-                        Excluir
-
-                    </button>
-
-                </td></>
-
-            </tr>
-
-        `;
-    });
 }
 
 /*
-========================================
+========================
 EXCLUIR
-========================================
+========================
 */
 
-function excluirUsuario(index){
+async function excluirUsuario(id){
 
-    usuarios.splice(index, 1);
+    try{
 
-    // ATUALIZAR STORAGE
+        await fetch(
 
-    localStorage.setItem(
-        "usuarios",
-        JSON.stringify(usuarios)
-    );
+            `${API}/usuarios/${id}`,
 
-    mensagem.innerHTML =
-        "Usuário removido.";
+            {
 
-    mensagem.style.color = "green";
+                method: "DELETE"
 
-    atualizarTabela();
+            }
+
+        );
+
+        listarUsuarios();
+
+    }
+
+    catch(erro){
+
+        console.log(erro);
+
+    }
+
 }
 
 /*
-========================================
+========================
 EDITAR
-========================================
+========================
 */
 
-function editarUsuario(index){
+function editarUsuario(
 
-    const usuario = usuarios[index];
+    id,
+    nome,
+    contato,
+    endereco,
+    perfil
+
+){
 
     document.getElementById("nome").value =
-        usuario.nome;
+        nome;
 
     document.getElementById("email").value =
-        usuario.email;
+        contato;
 
     document.getElementById("endereco").value =
-        usuario.endereco;
+        endereco;
 
     document.getElementById("perfil").value =
-        usuario.perfil;
+        perfil;
 
-    usuarios.splice(index, 1);
+    excluirUsuario(id);
 
-    // ATUALIZAR STORAGE
-
-    localStorage.setItem(
-        "usuarios",
-        JSON.stringify(usuarios)
-    );
-
-    atualizarTabela();
-
-    mensagem.innerHTML =
-        "Edite os dados e clique em cadastrar.";
-
-    mensagem.style.color = "#2196F3";
 }
