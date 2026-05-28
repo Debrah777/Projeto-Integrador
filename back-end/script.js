@@ -1,26 +1,56 @@
+```javascript
 const form = document.getElementById("formUsuario");
 
 const tabela = document.getElementById("tabelaUsuarios");
 
 const mensagem = document.getElementById("mensagem");
 
-let usuarios = [];
+/*
+========================================
+LOCAL STORAGE
+========================================
+*/
 
-// CADASTRAR
+// PEGAR DADOS SALVOS
+
+let usuarios =
+    JSON.parse(localStorage.getItem("usuarios")) || [];
+
+// MOSTRAR AO ABRIR A PÁGINA
+
+atualizarTabela();
+
+/*
+========================================
+CADASTRAR
+========================================
+*/
 
 form.addEventListener("submit", function(event){
 
+    // EVITA RECARREGAR A PÁGINA
+
     event.preventDefault();
 
-    const nome = document.getElementById("nome").value.trim();
+    const nome =
+        document.getElementById("nome").value.trim();
 
-    const email = document.getElementById("email").value.trim();
+    const email =
+        document.getElementById("email").value.trim();
 
-    const endereco = document.getElementById("endereco").value.trim();
+    const endereco =
+        document.getElementById("endereco").value.trim();
 
-    const perfil = document.getElementById("perfil").value;
+    const perfil =
+        document.getElementById("perfil").value;
 
-    // VALIDAÇÕES
+    /*
+    ========================================
+    VALIDAÇÕES
+    ========================================
+    */
+
+    // CAMPOS VAZIOS
 
     if(
         nome === "" ||
@@ -29,23 +59,40 @@ form.addEventListener("submit", function(event){
         perfil === ""
     ){
 
-        mensagem.innerHTML = "Preencha todos os campos.";
+        mensagem.innerHTML =
+            "Preencha todos os campos.";
 
         mensagem.style.color = "red";
 
         return;
     }
 
-    if(!email.includes("@")){
+    /*
+    ========================================
+    EMAIL
+    ========================================
+    */
 
-        mensagem.innerHTML = "E-mail inválido.";
+    // EMAIL DEVE TER @ E gmail.com
+
+    if(
+        !email.includes("@") ||
+        !email.endsWith("gmail.com")
+    ){
+
+        mensagem.innerHTML =
+            "O e-mail deve ser um Gmail válido.";
 
         mensagem.style.color = "red";
 
         return;
     }
 
-    // VERIFICAR EMAIL DUPLICADO
+    /*
+    ========================================
+    EMAIL DUPLICADO
+    ========================================
+    */
 
     const emailExiste = usuarios.find(
         usuario => usuario.email === email
@@ -53,14 +100,19 @@ form.addEventListener("submit", function(event){
 
     if(emailExiste){
 
-        mensagem.innerHTML = "E-mail já cadastrado.";
+        mensagem.innerHTML =
+            "Erro: e-mail já cadastrado.";
 
         mensagem.style.color = "red";
 
         return;
     }
 
-    // OBJETO
+    /*
+    ========================================
+    OBJETO
+    ========================================
+    */
 
     const usuario = {
 
@@ -71,9 +123,29 @@ form.addEventListener("submit", function(event){
 
     };
 
+    /*
+    ========================================
+    SALVAR
+    ========================================
+    */
+
     usuarios.push(usuario);
 
-    mensagem.innerHTML = "Usuário cadastrado com sucesso.";
+    // SALVAR NO NAVEGADOR
+
+    localStorage.setItem(
+        "usuarios",
+        JSON.stringify(usuarios)
+    );
+
+    /*
+    ========================================
+    MENSAGEM
+    ========================================
+    */
+
+    mensagem.innerHTML =
+        "Usuário cadastrado com sucesso.";
 
     mensagem.style.color = "green";
 
@@ -83,13 +155,21 @@ form.addEventListener("submit", function(event){
 
 });
 
-// ATUALIZAR TABELA
+/*
+========================================
+ATUALIZAR TABELA
+========================================
+*/
 
 function atualizarTabela(){
 
     tabela.innerHTML = "";
 
-    // SEM USUÁRIOS
+    /*
+    ========================================
+    SEM USUÁRIOS
+    ========================================
+    */
 
     if(usuarios.length === 0){
 
@@ -120,7 +200,11 @@ function atualizarTabela(){
         return;
     }
 
-    // PREENCHER TABELA
+    /*
+    ========================================
+    MOSTRAR USUÁRIOS
+    ========================================
+    */
 
     usuarios.forEach((usuario, index) => {
 
@@ -128,15 +212,7 @@ function atualizarTabela(){
 
             <tr>
 
-                <td>${usuario.nome}</td>
-
-                <td>${usuario.email}</td>
-
-                <td>${usuario.endereco}</td>
-
-                <td>${usuario.perfil}</td>
-
-                <td>
+                <><td>${usuario.nome}</td><td>${usuario.email}</td><td>${usuario.endereco}</td><td>${usuario.perfil}</td><td>
 
                     <button
                         class="editar"
@@ -156,7 +232,7 @@ function atualizarTabela(){
 
                     </button>
 
-                </td>
+                </td></>
 
             </tr>
 
@@ -164,34 +240,61 @@ function atualizarTabela(){
     });
 }
 
-// EXCLUIR
+/*
+========================================
+EXCLUIR
+========================================
+*/
 
 function excluirUsuario(index){
 
     usuarios.splice(index, 1);
 
-    mensagem.innerHTML = "Usuário removido.";
+    // ATUALIZAR STORAGE
+
+    localStorage.setItem(
+        "usuarios",
+        JSON.stringify(usuarios)
+    );
+
+    mensagem.innerHTML =
+        "Usuário removido.";
 
     mensagem.style.color = "green";
 
     atualizarTabela();
 }
 
-// EDITAR
+/*
+========================================
+EDITAR
+========================================
+*/
 
 function editarUsuario(index){
 
     const usuario = usuarios[index];
 
-    document.getElementById("nome").value = usuario.nome;
+    document.getElementById("nome").value =
+        usuario.nome;
 
-    document.getElementById("email").value = usuario.email;
+    document.getElementById("email").value =
+        usuario.email;
 
-    document.getElementById("endereco").value = usuario.endereco;
+    document.getElementById("endereco").value =
+        usuario.endereco;
 
-    document.getElementById("perfil").value = usuario.perfil;
+    document.getElementById("perfil").value =
+        usuario.perfil;
 
     usuarios.splice(index, 1);
+
+    // ATUALIZAR STORAGE
+
+    localStorage.setItem(
+        "usuarios",
+        JSON.stringify(usuarios)
+    );
 
     atualizarTabela();
 
