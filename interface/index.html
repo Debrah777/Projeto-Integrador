@@ -1,67 +1,179 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rescatto - Integração Interface x Banco</title>
 
+    <title>Rescatto</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-    <div class="container">
+    <header>
 
-        <h1>Cadastro de Usuários - Rescatto</h1>
+        <h1>🐾 Cadastro de Usuários - Rescatto</h1>
 
-        <form id="formUsuario">
+    </header>
 
-            <label>Nome</label>
-            <input type="text" id="nome">
+    <main>
 
-            <label>E-mail</label>
-            <input type="email" id="email">
+        <!-- CARD FORMULÁRIO -->
 
-            <label>Endereço</label>
-            <input type="text" id="endereco">
+        <section class="card">
 
-            <label>Perfil</label>
-            <select id="perfil">
-                <option value="">Selecione</option>
-                <option value="adotante">Adotante</option>
-                <option value="voluntario">Voluntário</option>
-                <option value="doador">Doador</option>
-                <option value="ONG">ONG</option>
-            </select>
+            <h2>Novo Usuário</h2>
 
-            <button type="submit">Cadastrar</button>
+            <form id="formUsuario">
 
-        </form>
+                <div class="grid">
 
-        <div id="mensagem"></div>
+                    <div class="campo">
 
-        <hr>
+                        <label>Nome</label>
 
-        <h2>Usuários Cadastrados</h2>
+                        <input
+                            type="text"
+                            id="nome"
+                            placeholder="Digite o nome completo"
+                        >
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Endereço</th>
-                    <th>Perfil</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
+                    </div>
 
-            <tbody id="tabelaUsuarios">
+                    <div class="campo">
 
-            </tbody>
-        </table>
+                        <label>E-mail</label>
 
-    </div>
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Digite o e-mail"
+                        >
 
-    <script src="script.js"></script>
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Endereço</label>
+
+                        <input
+                            type="text"
+                            id="endereco"
+                            placeholder="Digite o endereço"
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="campo campo-full">
+
+                    <label>Perfil</label>
+
+                    <select id="perfil">
+
+                        <option value="">
+                            Selecione o perfil
+                        </option>
+
+                        <option value="adotante">
+                            Adotante
+                        </option>
+
+                        <option value="voluntario">
+                            Voluntário
+                        </option>
+
+                        <option value="doador">
+                            Doador
+                        </option>
+
+                        <option value="ONG">
+                            ONG
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button type="submit" class="btn-cadastrar">
+
+                    ➕ Cadastrar Usuário
+
+                </button>
+
+            </form>
+
+            <div id="mensagem"></div>
+
+        </section>
+
+        <!-- CARD TABELA -->
+
+        <section class="card">
+
+            <h2>Usuários Cadastrados</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Endereço</th>
+                        <th>Perfil</th>
+                        <th>Ações</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tabelaUsuarios">
+
+                    <tr class="sem-usuarios">
+
+                        <td colspan="5">
+
+                            <div class="vazio">
+
+                                <h3>
+                                    Nenhum usuário cadastrado.
+                                </h3>
+
+                                <p>
+                                    Cadastre um novo usuário.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        Rescatto - Resgatando Gatinhos 🐱 © 2025
+
+    </footer>
+
+    <!-- JS -->
+
+    <script src="../back-end/script.js"></script>
 
 </body>
 </html>
